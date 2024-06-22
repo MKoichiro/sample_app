@@ -1,0 +1,45 @@
+{
+  // general:
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "emmet.includeLanguages": {
+    "erb": "html"
+  },
+  // Ruby:
+  "[ruby]": {
+    "editor.defaultFormatter": "Shopify.ruby-lsp"
+  },
+  // Ruby LSP:
+  // 本当は自動検知されるらしいが、うまくいかないのでrubyのパスを指定
+  "rubyLsp.rubyExecutablePath": "/home/koichiro/.rbenv/shims/ruby",
+  // ruby packagemanagerを通知
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "rbenv",
+  },
+  "rubyLsp.enabledFeatures": {
+    "codeActions": true,
+    "diagnostics": true,
+    "documentHighlights": true,
+    "documentLink": true,
+    "documentSymbols": true,
+    "foldingRanges": true,
+    "formatting": true,
+    "hover": true,
+    "inlayHint": true,
+    "onTypeFormatting": true,
+    "selectionRanges": true,
+    "semanticHighlighting": true,
+    "completion": true,
+    "codeLens": true,
+    "definition": true,
+    "workspaceSymbol": true,
+    "references": true
+  },
+  // rubocop gem or syntax tree gemに対応していて、インストールされているものが自動で選択される。（明示も可）
+  // 現在の環境ではrubocopがインストールされているので、rubocopが選択される
+  "rubyLsp.formatter": "auto",
+  // Solargraph:
+  // gemはグローバルインストールしているものを使うので、Bundlerを使わない
+  "solargraph.useBundler": false,
+  "solargraph.commandPath": "/home/koichiro/.rbenv/shims/solargraph",
+}
