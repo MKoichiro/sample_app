@@ -66,9 +66,12 @@ end
 # 追加
 group :test do
   gem 'capybara',                 '3.38.0'
+  # テストの自動化を行うためのgem。
   gem 'guard',                    '2.18.0'
   gem 'guard-minitest',           '2.4.6'
+  # 簡易テスト用gem。RSpecの方が本格的で一般的。
   gem 'minitest',                 '5.18.0'
+  # minitestの結果に色を付けたりして見やすくするためのgem。
   gem 'minitest-reporters',       '1.6.0'
   gem 'rails-controller-testing', '1.0.5'
   gem 'selenium-webdriver',       '4.8.3'
