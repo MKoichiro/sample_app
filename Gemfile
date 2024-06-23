@@ -13,6 +13,8 @@ gem 'rails', '~> 7.1.3', '>= 7.1.3.4'
 gem 'sassc-rails', '>= 2.1.2'
 # Provide Sass-powered version of Bootstrap 3 [https://github.com/twbs/bootstrap-sass]
 gem 'bootstrap-sass', '~> 3.4', '>= 3.4.1'
+# bootstrap-sass requires this
+gem 'jquery-rails'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
