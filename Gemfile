@@ -9,7 +9,10 @@ ruby '3.3.2'
 gem 'rails', '~> 7.1.3', '>= 7.1.3.4'
 
 # 追加
+# Integrate sass compilation into Rails asset pipeline (separated as gem since Rails 7) [https://github.com/sass/sassc-rails]
 gem 'sassc-rails', '>= 2.1.2'
+# Provide Sass-powered version of Bootstrap 3 [https://github.com/twbs/bootstrap-sass]
+gem 'bootstrap-sass', '~> 3.4', '>= 3.4.1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
@@ -39,7 +42,7 @@ gem 'jbuilder'
 # gem 'bcrypt', '~> 3.1.7'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[ windows jruby ]
+gem 'tzinfo-data', platforms: %i[windows jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
@@ -49,7 +52,7 @@ gem 'bootsnap', require: false
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem 'debug', platforms: %i[ mri windows ]
+  gem 'debug', platforms: %i[mri windows]
 
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3', '~> 1.4'
