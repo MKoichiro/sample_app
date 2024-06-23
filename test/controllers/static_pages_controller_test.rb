@@ -16,7 +16,7 @@ class StaticPagesControllerTest < ActionDispatch::IntegrationTest
     get static_pages_home_url # static_pages/home のURLにHTTP GETリクエストを送信します。
     # このリクエストは、static_pagesコントローラのhomeアクションを呼び出します。
     assert_response :success # その結果のレスポンスは成功（例: HTTPステータスコード200）であるべきです。
-    assert_select 'title', "Home | #{@base_title}" # titleタグの中身が「Home | Ruby on Rails Tutorial Sample App」であることを確認します。
+    assert_select 'title', @base_title # titleタグの中身が「Home | Ruby on Rails Tutorial Sample App」であることを確認します。
   end
 
   test 'should get help' do
