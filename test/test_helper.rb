@@ -12,6 +12,10 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    # app/helpers/application_helper.rbのApplicationHelperモジュールを継承して
+    # full_titleメソッドをテストコード内で使用できるようにする
+    include ApplicationHelper
+
     # Add more helper methods to be used by all tests here...
   end
 end
