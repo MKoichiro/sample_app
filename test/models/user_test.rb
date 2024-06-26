@@ -2,7 +2,7 @@ require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
   def setup
-    @user = User.new(name: 'Example User', email: 'user.example.com')
+    @user = User.new(name: 'Example User', email: 'user@example.com')
   end
 
   # user は有効でなければならない
@@ -33,4 +33,40 @@ class UserTest < ActiveSupport::TestCase
     @user.email = "#{'a' * 244}@example.com"
     assert_not @user.valid?
   end
+
+  # 指定した email は有効なフォーマットとして認識されるべき
+  test 'email validation should accept valid addresses' do
+    valid_addresses = %w[
+      user@example.com
+      USER@foo.COM
+      A_US-ER@foo.bar.org
+      first.last@foo.jp
+      alice+bob@baz.cn
+    ]
+
+    valid_addresses.each do |valid_address|
+      @user.email = valid_address
+      assert @user.valid?, "#{valid_address.inspect} should be valid"
+    end
+  end
+
+  # 指定した email は無効なフォーマットとして認識されるべき
+  test 'email validation should be rejected invalid addresses' do
+    invalid_addresses = [
+      'user@example,com',   # コンマは許可されていない
+      'user_at_foo.org',    # @ がない
+      'user.name@example.', # ドメインがない
+      'foo@bar_baz.com',    # ドメイン名のアンダースコアは許可されていない
+      'foo@bar+baz.com',    # ドメイン名のプラスは許可されていない
+      'foo@bar..com'        # ドメイン名のドットが連続している
+    ]
+
+    invalid_addresses.each do |invalid_address|
+      @user.email = invalid_address
+      assert_not @user.valid?, "#{invalid_address.inspect} should be invalid"
+    end
+  end
 end
+
+# memo:
+# - `assert` メソッドの第二引数には、エラーメッセージを指定できる。
