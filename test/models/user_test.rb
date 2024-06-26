@@ -21,4 +21,16 @@ class UserTest < ActiveSupport::TestCase
     @user.email = '     '
     assert_not @user.valid?
   end
+
+  # name は 50 文字以下であるべき（50に特別な意味はないが、view表示時に扱いやすい数値にする）
+  test 'name should not be too long' do
+    @user.name = 'a' * 51
+    assert_not @user.valid?
+  end
+
+  # email は 255 文字以下であるべき（多くのDBMSでstring型の最大長が255文字）
+  test 'email should not be too long' do
+    @user.email = "#{'a' * 244}@example.com"
+    assert_not @user.valid?
+  end
 end
