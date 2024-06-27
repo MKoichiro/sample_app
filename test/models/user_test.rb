@@ -3,7 +3,12 @@ require 'test_helper'
 class UserTest < ActiveSupport::TestCase
   # テスト環境で使うユーザーを作成
   def setup
-    @user = User.new(name: 'Example User', email: 'user@example.com')
+    @user = User.new(
+      name: 'Example User',
+      email: 'user@example.com',
+      password: 'password',
+      password_confirmation: 'password'
+    )
   end
 
   # user は有効でなければならない
@@ -82,9 +87,21 @@ class UserTest < ActiveSupport::TestCase
     @user.save
     assert_equal mixed_case_email.downcase, @user.reload.email
   end
+
+  # password は全て空文字列であってはならない
+  test 'password should be present (nonblank)' do
+    @user.password = @user.password_confirmation = ' ' * 8
+    assert_not @user.valid?
+  end
+
+  # password は 8 文字以上であるべき
+  test 'password should have a minimum length' do
+    @user.password = @user.password_confirmation = 'a' * 7
+    assert_not @user.valid?
+  end
 end
 
 # memo:
 # - `assert` メソッドの第二引数には、エラーメッセージを指定できる。
-# - test環境では他環境とは独立したデータベースを作成する。
-#   またtest中にデータベースに加えた変更はテスト完了後に都度破棄される。
+# - test 環境では他環境とは独立したデータベースを作成する。
+#   またテスト中にデータベースに加えた変更はテスト完了後に都度破棄される。
