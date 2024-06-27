@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  # 保存前に email を小文字に変換する
+  # before_save { self.email = email.downcase } と等価
+  before_save { email.downcase! }
+
   validates :name,
             presence: true,
             length: { maximum: 50 }
@@ -7,7 +11,8 @@ class User < ApplicationRecord
   validates :email,
             presence: true,
             length: { maximum: 255 },
-            format: { with: VALID_EMAIL_REGEX }
+            format: { with: VALID_EMAIL_REGEX },
+            uniqueness: true
 end
 
 # memo 1:

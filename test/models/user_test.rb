@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
+  # テスト環境で使うユーザーを作成
   def setup
     @user = User.new(name: 'Example User', email: 'user@example.com')
   end
@@ -66,7 +67,24 @@ class UserTest < ActiveSupport::TestCase
       assert_not @user.valid?, "#{invalid_address.inspect} should be invalid"
     end
   end
+
+  # email は一意であるべき
+  test 'email addresses should be unique' do
+    duplicate_user = @user.dup       # copy を作成
+    @user.save                       # original を保存
+    assert_not duplicate_user.valid? # original がすでにあるとき、copy は無効
+  end
+
+  # email は保存の直前に小文字に変換されるべき
+  test 'email addresses should be saved as lower-case' do
+    mixed_case_email = 'Foo@ExAMPle.CoM'
+    @user.email = mixed_case_email
+    @user.save
+    assert_equal mixed_case_email.downcase, @user.reload.email
+  end
 end
 
 # memo:
 # - `assert` メソッドの第二引数には、エラーメッセージを指定できる。
+# - test環境では他環境とは独立したデータベースを作成する。
+#   またtest中にデータベースに加えた変更はテスト完了後に都度破棄される。
