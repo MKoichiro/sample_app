@@ -6,8 +6,8 @@ Rails.application.routes.draw do
   get '/contact', to: 'static_pages#contact'
 
   get '/signup', to: 'users#new'
-
-  resources :users
+  # `'users/new'` の役割は↑で果たされているため、生成から除く。
+  resources :users, except: [:new]
 end
 
 # memo:
