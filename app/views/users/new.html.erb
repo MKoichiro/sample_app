@@ -3,22 +3,23 @@
 
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
-    <%= form_with(model: @user) do |f| %>                             <!-- L01: <form action="/users" accept-charset="UTF-8" method="post"> -->
-                                                                      <!-- L02:   <input type="hidden" name="authenticity_token" value="YcBUxnMav3gZxD0tKskeX36bsN_gSbTLKFTox7efXGU_RcRNiMxdGi1qn1wv1rIxzzXJQKoyLnr7tGPWVe9D8A" autocomplete="off" control-id="ControlID-1"> -->
-      <%= f.label :name %>                                            <!-- L03:   <label for="user_name">Name</label> -->
-      <%= f.text_field :name %>                                       <!-- L04:   <input type="text" name="user[name]" id="user_name" control-id="ControlID-2"> -->
+    <%= form_with(model: @user) do |f| %>                                     <!-- L01: <form action="/users" accept-charset="UTF-8" method="post"> -->
+      <%= render 'shared/error_messages' %>
+                                                                              <!-- L02:   <input type="hidden" name="authenticity_token" value="YcBUxnMav3gZxD0tKskeX36bsN_gSbTLKFTox7efXGU_RcRNiMxdGi1qn1wv1rIxzzXJQKoyLnr7tGPWVe9D8A" autocomplete="off" control-id="ControlID-1"> -->
+      <%= f.label :name %>                                                    <!-- L03:   <label for="user_name">Name</label> -->
+      <%= f.text_field :name, class: 'form-control' %>                        <!-- L04:   <input type="text" name="user[name]" id="user_name" control-id="ControlID-2"> -->
 
-      <%= f.label :email %>                                           <!-- L05:   <label for="user_email">Email</label> -->
-      <%= f.email_field :email %>                                     <!-- L06:   <input type="email" name="user[email]" id="user_email" control-id="ControlID-3"> -->
+      <%= f.label :email %>                                                   <!-- L05:   <label for="user_email">Email</label> -->
+      <%= f.email_field :email, class: 'form-control' %>                      <!-- L06:   <input type="email" name="user[email]" id="user_email" control-id="ControlID-3"> -->
 
-      <%= f.label :password %>                                        <!-- L07:   <label for="user_password">Password</label> -->
-      <%= f.password_field :password %>                               <!-- L08:   <input type="password" name="user[password]" id="user_password" control-id="ControlID-4"> -->
+      <%= f.label :password %>                                                <!-- L07:   <label for="user_password">Password</label> -->
+      <%= f.password_field :password, class: 'form-control' %>                <!-- L08:   <input type="password" name="user[password]" id="user_password" control-id="ControlID-4"> -->
 
-      <%= f.label :password_confirmation, "Confirmation" %>           <!-- L09:   <label for="user_password_confirmation">Confirmation</label> -->
-      <%= f.password_field :password_confirmation %>                  <!-- L10:   <input type="password" name="user[password_confirmation]" id="user_password_confirmation" control-id="ControlID-5"> -->
+      <%= f.label :password_confirmation, "Confirmation" %>                   <!-- L09:   <label for="user_password_confirmation">Confirmation</label> -->
+      <%= f.password_field :password_confirmation, class: 'form-control' %>   <!-- L10:   <input type="password" name="user[password_confirmation]" id="user_password_confirmation" control-id="ControlID-5"> -->
 
-      <%= f.submit "Create my account", class: "btn btn-primary" %>   <!-- L11:   <input type="submit" name="commit" value="Create my account" class="btn btn-primary" data-disable-with="Create my account" control-id="ControlID-6"> -->
-    <% end %>                                                         <!-- L12: </form> -->
+      <%= f.submit "Create my account", class: "btn btn-primary" %>           <!-- L11:   <input type="submit" name="commit" value="Create my account" class="btn btn-primary" data-disable-with="Create my account" control-id="ControlID-6"> -->
+    <% end %>                                                                 <!-- L12: </form> -->
   </div>
 </div>
 
