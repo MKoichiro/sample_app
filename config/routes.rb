@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'sessions/new'
   root 'static_pages#home'
 
   get '/help',    to: 'static_pages#help'
@@ -8,6 +9,10 @@ Rails.application.routes.draw do
   get '/signup', to: 'users#new'
   # `'users/new'` の役割は↑で果たされているため、生成から除く。
   resources :users, except: [:new]
+
+  get    '/login',  to: 'sessions#new'
+  post   '/login',  to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy'
 end
 
 # memo:
