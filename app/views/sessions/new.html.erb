@@ -1,2 +1,33 @@
-<h1>Sessions#new</h1>
-<p>Find me in app/views/sessions/new.html.erb</p>
+<% provide(:title, "Log in") %>
+<h1>Log in</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%# `params` 変数に `session` というキー名で保存させるように `scope` で指定している。`params = { session: { ... } }` %>
+    <%= form_with(url: login_path, scope: :session) do |f| %>
+      <%= f.label :email %>
+      <%= f.email_field :email, class: "form-control" %>
+
+      <%= f.label :password %>
+      <%= f.password_field :password, class: "form-control" %>
+
+      <%= f.submit "Log in", class: "btn btn-primary" %>
+    <% end %>
+
+    <p>New user? <%= link_to "Sign up now!", signup_path %></p>
+  </div>
+</div>
+
+<%#
+memo:
+  sessions controller にはモデルが無いので `ActiveRecord`` のメソッドが使えない。
+  users controller の時には、
+  ```
+  form_with(model: @user)
+  ```
+  で指定できたが、今回は、
+  ```
+  form_with(url: login_path, scope: :session)
+  ```
+  として、url と scope(paramsのキー名) を明示的に rails に教える必要がある。
+%>
