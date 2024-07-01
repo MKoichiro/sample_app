@@ -1,9 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-# one:
-#   name: MyString
-#   email: MyString
+michael:
+  name: Michael Hartl
+  email: michael@example.com
+  password_digest: <%= User.digest("password") %>
 
-# two:
-#   name: MyString
-#   email: MyString
+# memo:
+# `fixtures` ディレクトリ内の `models.yml` には、モデルごとのテスト用データを登録できる。
+# また、model名に応じたメソッドが自動生成され、
+# テストファイルで、例えば、`users(:michael)` と記述することで、このデータにアクセスできる。

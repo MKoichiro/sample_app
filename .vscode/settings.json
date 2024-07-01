@@ -42,4 +42,8 @@
   // gemはグローバルインストールしているものを使うので、Bundlerを使わない
   "solargraph.useBundler": false,
   "solargraph.commandPath": "/home/koichiro/.rbenv/shims/solargraph",
+  "cSpell.words": [
+    "hotwired",
+    "importmap"
+  ],
 }

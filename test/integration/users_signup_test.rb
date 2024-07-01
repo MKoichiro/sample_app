@@ -42,6 +42,7 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
       # リダイレクト先に移動
       follow_redirect!
       assert_template 'users/show'
+      assert is_logged_in?
 
       # リダイレクト先でフラッシュメッセージが表示されていることを確認
       assert_not flash.empty?

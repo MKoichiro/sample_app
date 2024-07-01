@@ -3,6 +3,22 @@ module SessionsHelper
     # :user_id というキー名でユーザーIDを保存
     session[:user_id] = user.id
   end
+
+  def current_user
+    if session[:user_id]
+      # メモ化
+      @current_user ||= User.find_by(id: session[:user_id])
+    end
+  end
+
+  def logged_in?
+    current_user.present?
+  end
+
+  def log_out
+    reset_session
+    @current_user = nil
+  end
 end
 
 # memo 1: `session` メソッド
@@ -25,3 +41,23 @@ end
 # 通常ブラウザを閉じるとセッションIDは破棄されるが、ブラウザのクッキーの設定やアプリの設計によってはセッションIDは保持される。
 # セッションを永続化する場合は、この攻撃に対して特に注意が必要。
 # ログイン認証後に`reset_session`を実行し、新しいセッションIDを生成することが、セッション固定攻撃への有効な対策。
+
+# memo 3: メモ化
+# インスタンス変数を使用して
+# `@variable ||= Model.find_by()`
+# という形でメモ化できる。
+# ただし、メモされているのは、同一のリクエスト内でのみなので、
+# 同一のリクエスト内で複数回呼び出される場合のみ有効。
+# なお、この書き方は、
+# ```
+# if @variable
+#   @variable = Model.find_by()
+# else
+#   @variable
+# end
+# ```
+# または、
+# ```
+# @vaaible = @variable || Model.find_by()
+# ```
+# と等価。

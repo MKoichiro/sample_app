@@ -15,6 +15,9 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    log_out
+    # turbo を使用する場合には、`status: :see_other` (303) を指定することでDELETEリクエスト後のリダイレクトを正常に行える。
+    redirect_to root_url, status: :see_other
   end
 end
 
@@ -23,7 +26,7 @@ end
 # `user&.authenticate(params[:session][:password])` は、
 # `user && user.authenticate(params[:session][:password])` と同じ意味。
 # `obj&.method` は、`obj` が `nil` でない場合のみ、 `method` を実行する。
-# 「オブジェクトが存在するならメソッドを実行」`obj && obj.method` と書くシーンが多いので導入された。
+# 「objが存在するならメソッドを実行」`obj && obj.method` と書くシーンが多いので導入された。
 
 # memo: `flash` と `flash.now`
 # `flash` メソッドは、次回リクエスト終了時までその値を保持する。

@@ -16,6 +16,12 @@ class User < ApplicationRecord
 
   has_secure_password
   validates :password, presence: true, length: { minimum: 8 }
+
+  # 文字列を bcrypt ハッシュに変換
+  def self.digest(string)
+    const = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: const)
+  end
 end
 
 # memo 1:

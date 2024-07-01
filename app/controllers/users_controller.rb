@@ -11,6 +11,10 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      # signup 後に自動で login する。
+      reset_session
+      log_in @user
+
       flash[:success] = 'Welcome to the Sample App!'
       # GETリクエストを送信して別ページに遷移。
       # 変数名に Convention は無く、中身が `User` クラスのオブジェクトであることが重要。
