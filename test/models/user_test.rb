@@ -59,12 +59,12 @@ class UserTest < ActiveSupport::TestCase
   # 指定した email は無効なフォーマットとして認識されるべき
   test 'email validation should be rejected invalid addresses' do
     invalid_addresses = [
-      'user@example,com',   # コンマは許可されていない
+      'user@example,com',   # コンマ
       'user_at_foo.org',    # @ がない
       'user.name@example.', # ドメインがない
-      'foo@bar_baz.com',    # ドメイン名のアンダースコアは許可されていない
-      'foo@bar+baz.com',    # ドメイン名のプラスは許可されていない
-      'foo@bar..com'        # ドメイン名のドットが連続している
+      'foo@bar_baz.com',    # ドメイン名のアンダースコア
+      'foo@bar+baz.com',    # ドメイン名のプラス
+      'foo@bar..com'        # ドメイン名のドットが連続
     ]
 
     invalid_addresses.each do |invalid_address|
@@ -88,7 +88,7 @@ class UserTest < ActiveSupport::TestCase
     assert_equal mixed_case_email.downcase, @user.reload.email
   end
 
-  # password は全て空文字列であってはならない
+  # password は全て空文字列であってはならない（一部空文字は現状許可）
   test 'password should be present (nonblank)' do
     @user.password = @user.password_confirmation = ' ' * 8
     assert_not @user.valid?
@@ -99,9 +99,14 @@ class UserTest < ActiveSupport::TestCase
     @user.password = @user.password_confirmation = 'a' * 7
     assert_not @user.valid?
   end
+
+  # remember_digest カラムが nil なら、authenticated? は false を返すべき
+  test 'authenticated? should return false for a user with nil digest' do
+    assert_not @user.authenticated?('')
+  end
 end
 
 # memo:
 # - `assert` メソッドの第二引数には、エラーメッセージを指定できる。
 # - test 環境では他環境とは独立したデータベースを作成する。
-#   またテスト中にデータベースに加えた変更はテスト完了後に都度破棄される。
+#   またテスト中にデータベースに加えた変更はテスト完了後に都度、自動で破棄される。

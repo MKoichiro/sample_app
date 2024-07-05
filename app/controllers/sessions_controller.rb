@@ -2,11 +2,12 @@ class SessionsController < ApplicationController
   def new
   end
 
-  def create
+  def create # rubocop:disable Metrics/AbcSize
     user = User.find_by(email: params[:session][:email].downcase)
     if user&.authenticate(params[:session][:password]) # 認証処理
-      reset_session                                    # session id をリセット
-      log_in user                                      # session[:user_id] = user.id でsessionにユーザーIDをセット
+      reset_session     # session id をリセット
+      remember user     # remember_token/digest を生成, cookie に remember_token と user_id を永続的に保存
+      log_in user       # session[:user_id] = user.id で session にユーザーIDをセット
       redirect_to user
     else
       flash.now[:danger] = 'Invalid email/password combination'
@@ -15,7 +16,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out
+    log_out if logged_in?
     # turbo を使用する場合には、`status: :see_other` (303) を指定することでDELETEリクエスト後のリダイレクトを正常に行える。
     redirect_to root_url, status: :see_other
   end

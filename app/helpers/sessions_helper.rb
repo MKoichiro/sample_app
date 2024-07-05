@@ -4,10 +4,37 @@ module SessionsHelper
     session[:user_id] = user.id
   end
 
+  # ユーザーを永続的セッションに記憶する
+  def remember(user)
+    # remember_token を発行、DB にはハッシュ化して remember_digest として保存
+    user.remember
+
+    # ブラウザの cookie に対して...
+    # 1. ユーザーID を暗号化して保存
+    cookies.permanent.encrypted[:user_id] = user.id
+    # 2. remember_token を暗号化して保存
+    cookies.permanent.encrypted[:remember_token] = user.remember_token
+  end
+
+  # 永続的セッションを破棄
+  def forget(user)
+    user.forget
+
+    cookies.delete(:user_id)
+    cookies.delete(:remember_token)
+  end
+
   def current_user
-    if session[:user_id]
+    if (user_id = session[:user_id])              # [短期的] session に保存されたユーザーIDがある場合
       # メモ化
       @current_user ||= User.find_by(id: session[:user_id])
+    elsif (user_id = cookies.encrypted[:user_id]) # [永続的] cookie に保存されたユーザーIDがある場合
+      user = User.find_by(id: user_id)
+      if user&.authenticated?(cookies.encrypted[:remember_token])
+        # ユーザーが存在し、かつ remember_token(cookies) と remember_digest(DB) が整合する場合
+        log_in user
+        @current_user = user
+      end
     end
   end
 
@@ -16,6 +43,7 @@ module SessionsHelper
   end
 
   def log_out
+    forget(current_user)
     reset_session
     @current_user = nil
   end
@@ -61,3 +89,11 @@ end
 # @vaaible = @variable || Model.find_by()
 # ```
 # と等価。
+
+# memo: `cookies` メソッド
+# - `cookies` は、ブラウザのクッキーにアクセスするためのメソッド。
+# `cookies[:key] = { value: value, expires: time }`` で、有効期限付きでクッキーに保存できる。
+# `cookies.permanent[:key] = value` は、
+# `cookies[:key] = { value: value, expires: 20.years.from_now.utc }` と等価。
+# 20年というのはセッション永続化のために、慣習的によく使われる値。
+# また、`cookies.permanent.encrypted[:key] = value` で、暗号化して保存できる。
