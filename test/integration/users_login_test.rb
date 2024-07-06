@@ -83,3 +83,35 @@ class LogoutTest < Logout
     assert_redirected_to root_url
   end
 end
+
+class RememberMeTest < UsersLogin
+  # remember me にチェックを入れてログインした場合
+  test 'login with remembering' do
+    log_in_as(@user, remember_me: '1')
+
+    # assert_not cookies[:remember_token].blank?
+    # ↓改良
+    assert_equal cookies[:remember_token], assigns(:user).remember_token
+
+    # assert_equal cookies[:remember_token], @user.remember_token
+    # rememeber_token は User クラスの仮想属性なので、@user には存在しない
+    # そのため、assigns(:user) でコントローラー内で定義された @user を取得する
+  end
+
+  # remember me にチェックを入れずにログインした場合
+  test 'login without remembering' do
+    # 前回は remember me を有効にしてログイン(cookiesにユーザー情報を保存)したことを想定
+    log_in_as(@user, remember_me: '1')
+    delete logout_path
+
+    # remember me を無効にしてログイン(cookiesのユーザー情報を削除されているか検証)
+    log_in_as(@user, remember_me: '0')
+    assert_empty cookies[:remember_token]
+  end
+end
+
+# memo: テスト環境での仮想属性へのアクセス
+# assert_not cookies[:remember_token].blank?
+# は、assert_not cookies[:remember_token].empty? などで書き換えることはできない。
+# テスト環境以外では、空文字列を返すが、テスト環境では `nil` を返されるという事情があり、
+# この `nil` オブジェクトにempty?メソッドは存在しないため。

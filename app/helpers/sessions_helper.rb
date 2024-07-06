@@ -2,6 +2,9 @@ module SessionsHelper
   def log_in(user)
     # :user_id というキー名でユーザーIDを保存
     session[:user_id] = user.id
+
+    # セッションリプレイ攻撃から保護 (https://techracho.bpsinc.jp/hachi8833/2023_06_02/130443)
+    session[:session_token] = user.session_token
   end
 
   # ユーザーを永続的セッションに記憶する
@@ -12,8 +15,8 @@ module SessionsHelper
     # ブラウザの cookie に対して...
     # 1. ユーザーID を暗号化して保存
     cookies.permanent.encrypted[:user_id] = user.id
-    # 2. remember_token を暗号化して保存
-    cookies.permanent.encrypted[:remember_token] = user.remember_token
+    # 2. remember_token を保存
+    cookies.permanent[:remember_token] = user.remember_token
   end
 
   # 永続的セッションを破棄
@@ -26,11 +29,11 @@ module SessionsHelper
 
   def current_user
     if (user_id = session[:user_id])              # [短期的] session に保存されたユーザーIDがある場合
-      # メモ化
-      @current_user ||= User.find_by(id: session[:user_id])
+      user = User.find_by(id: user_id)
+      @current_user = user if user && session[:session_token] == user.session_token
     elsif (user_id = cookies.encrypted[:user_id]) # [永続的] cookie に保存されたユーザーIDがある場合
       user = User.find_by(id: user_id)
-      if user&.authenticated?(cookies.encrypted[:remember_token])
+      if user&.authenticated?(cookies[:remember_token])
         # ユーザーが存在し、かつ remember_token(cookies) と remember_digest(DB) が整合する場合
         log_in user
         @current_user = user
@@ -97,3 +100,15 @@ end
 # `cookies[:key] = { value: value, expires: 20.years.from_now.utc }` と等価。
 # 20年というのはセッション永続化のために、慣習的によく使われる値。
 # また、`cookies.permanent.encrypted[:key] = value` で、暗号化して保存できる。
+
+# memo: `user_id` の暗号化と非暗号の `remember_token`
+# `user_id` の場合
+# - 一意性を持つ
+# - インクリメンタルな整数値で予測可能
+# という性質上、暗号化して保存することで、ユーザーIDを隠蔽する。
+#
+# `remember_token` の場合
+# - 一意性を持つ必要は無い(確率的に一意性は高い)
+# - ランダムで複雑な `Base64` 文字列
+# という性質上、暗号化する必要がない。
+# サーバー(DB)側でハッシュ化して保存し、クライアント(cookies)側ではプレーンテキストで保存する。

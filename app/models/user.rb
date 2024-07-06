@@ -28,6 +28,15 @@ class User < ApplicationRecord
     self.remember_token = User.new_token
     # digest メソッドで remember_digest カラムに remember_token をハッシュ化して保存
     update_attribute(:remember_digest, User.digest(remember_token))
+    # ↑で DB に保存した remember_digest を返す
+    remember_digest
+  end
+
+  # セッションハイジャック防止のためセッショントークンを返す
+  # セッショントークンとして、remember_digest を使用
+  def session_token
+    # remember_digest が nil の場合、新しい remember メソッドで remember_digest を生成して返す
+    remember_digest || remember
   end
 
   # 渡されたトークンがダイジェストと一致したら true を返す
