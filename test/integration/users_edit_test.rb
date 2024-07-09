@@ -24,7 +24,7 @@ class UsersEditTest < ActionDispatch::IntegrationTest
     # ログインしていない状態で編集ページにアクセス
     get edit_user_path(@user)
     # すると、セッションに URL が保存される
-    assert_equal session[:forwarding_url], edit_user_path(@user)
+    assert_equal session[:forwarding_url], edit_user_url(@user)
     # ログインページにリダイレクトしてログイン
     log_in_as(@user)
     # ログイン後、編集ページに戻ることを確認 (friendly forwarding)
