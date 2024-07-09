@@ -210,6 +210,6 @@ input {
 
 /* Dropdown menu */
 
-.dropdown-menu.active {
+.dropdown-menu/*.active*/ {
   display: block;
 }

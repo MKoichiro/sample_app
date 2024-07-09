@@ -5,6 +5,11 @@ michael:
   email: michael@example.com
   password_digest: <%= User.digest("password") %>
 
+archer:
+  name: Sterling Archer
+  email: duchess@example.gov
+  password_digest: <%= User.digest("password") %>
+
 # memo:
 # `fixtures` ディレクトリ内の `models.yml` には、モデルごとのテスト用データを登録できる。
 # また、model名に応じたメソッドが自動生成され、

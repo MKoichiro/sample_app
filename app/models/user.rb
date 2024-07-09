@@ -20,7 +20,10 @@ class User < ApplicationRecord
             uniqueness: true
 
   has_secure_password
-  validates :password, presence: true, length: { minimum: 8 }
+  validates :password,
+            presence: true,
+            length: { minimum: 8 },
+            allow_nil: true
 
   # 永続的セッションのためにユーザーをデータベースに記憶する
   def remember
@@ -149,3 +152,10 @@ end
 # - `class << self` は、クラスメソッドを定義するための構文。
 # `def Class.method` または `def self.method` における、
 # `Class` や `self` をこのブロックでラップしていると省略できる。
+
+# memo 8: `password` のバリデーションにおける `allow_nil: true`
+# `update` 時の `PATCH` リクエスト時に (`name` や `email` のみの編集を意図しており)
+# `password` が未入力でもリクエストを許容したいため。
+# 新規ユーザー登録時には、`validates` メソッドによるバリデーションだけでなく、
+# `has_secure_password` メソッドによるバリデーションが効くので、
+# `validates` メソッドによるバリデーションで `nil` を許容して問題ない。

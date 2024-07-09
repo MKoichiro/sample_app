@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+  before_action :logged_in_user, only: [:edit, :update]
+  before_action :correct_user, only: [:edit, :update]
+
   def new
     # Pass a new User object to form_with in view to create a form for a new user.
     @user = User.new
@@ -16,13 +19,27 @@ class UsersController < ApplicationController
       log_in @user
 
       flash[:success] = 'Welcome to the Sample App!'
-      # GETリクエストを送信して別ページに遷移。
-      # 変数名に Convention は無く、中身が `User` クラスのオブジェクトであることが重要。
+
+      # redirect_to: GETリクエストを送信して別ページに遷移。
       redirect_to @user
     else
       # 新しいリクエスト無しで、単に再描画。
-      # 'new' は、`new.html.erb` を指す。
+      # 'new' は、`views/users/new.html.erb` を指す。
       render 'new', status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    @user = User.find(params[:id])
+  end
+
+  def update
+    @user = User.find(params[:id])
+    if @user.update(user_params)
+      flash[:success] = 'Profile updated'
+      redirect_to @user
+    else
+      render 'edit', status: :unprocessable_entity
     end
   end
 
@@ -31,6 +48,25 @@ class UsersController < ApplicationController
   # Strong parameter: constrain the params that can be passed to the create method, declaring explicitly.
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
+  end
+
+  # Before filters
+  # ログインしていないユーザーの場合、ログインページにリダイレクトする。
+  def logged_in_user
+    unless logged_in?
+      # friendly forwarding のために、アクセスしようとした URL をセッションに一時退避
+      store_location
+
+      flash[:danger] = 'Please log in.'
+      # destory アクションの before filter になるため、status: :seeother でリダイレクト。
+      redirect_to login_url, status: :see_other
+    end
+  end
+
+  # 本人でない場合、ホームページにリダイレクトする。
+  def correct_user
+    @user = User.find(params[:id])
+    redirect_to(root_url, status: :see_other) unless current_user?(@user)
   end
 end
 

@@ -41,6 +41,11 @@ module SessionsHelper
     end
   end
 
+  # 本人確認（渡されたユーザーが現在のユーザーであれば true を返す）
+  def current_user?(user)
+    user && user == current_user
+  end
+
   def logged_in?
     current_user.present?
   end
@@ -49,6 +54,12 @@ module SessionsHelper
     forget(current_user)
     reset_session
     @current_user = nil
+  end
+
+  # friendly forwarding のために、
+  # アクセスしようとようとした URL をセッションに保存
+  def store_location
+    session[:forwarding_url] = request.original_url if request.get?
   end
 end
 
