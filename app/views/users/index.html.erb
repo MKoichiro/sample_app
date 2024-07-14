@@ -1,11 +1,25 @@
 <% provide(:title, "All users") %>
 <h1>All users</h1>
 
+<%# ページネーションのリンクを生成する。 %>
+<%= will_paginate %>
+
 <ul class="users">
-  <% @users.each do |user| %>
-    <li>
-      <%= gravatar_for user, size: 50 %>
-      <%= link_to user.name, user %>
-    </li>
-  <% end %>
+  <%= render @users %>
 </ul>
+
+<%# ページネーションのリンクを生成する。 %>
+<%= will_paginate %>
+
+
+<%#
+memo 1: `render @users`
+  次と同義。
+  ```
+  @users.each do |user|
+    render user
+  end
+  ```
+  render メソッドの引数には、モデルオブジェクトのコレクションを渡すと、
+  自動でそのコレクションの各要素に対して、同名のパーシャルを呼び出す仕様になっている。
+%>

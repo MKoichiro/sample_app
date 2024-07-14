@@ -7,3 +7,28 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+# メインのサンプルユーザーを1人作成する
+User.create!(
+  name: 'Example User',
+  email: 'example@railstutorial.org',
+  password: 'foobarbaz',
+  password_confirmation: 'foobarbaz'
+)
+
+# 追加のユーザーをまとめて生成する
+99.times do |n|
+  name = Faker::Name.name # => "Christophe Bartell" (facker gem でランダムな名前を生成)
+  email = "example-#{n + 1}@railstutorial.org"
+  password = 'password'
+
+  User.create!(
+    name:,
+    email:,
+    password:,
+    password_confirmation: password
+  )
+end
+
+# memo 1: `create!`
+# `create!` は `create` と違い、データが無効の場合に「例外」（エラー）を発生させる。

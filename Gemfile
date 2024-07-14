@@ -15,6 +15,12 @@ gem 'sassc-rails', '>= 2.1.2'
 gem 'bootstrap-sass', '~> 3.4', '>= 3.4.1'
 # bootstrap-sass requires this
 gem 'jquery-rails'
+# Provide imaginary sample users
+gem 'faker', '2.21.0'
+# Provide pagenation
+gem 'will_paginate', '3.3.1'
+# Provide pagenation for Bootstrap
+gem 'bootstrap-will_paginate', '1.0.0'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'

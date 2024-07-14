@@ -8,7 +8,10 @@ class UsersController < ApplicationController
   end
 
   def index
-    @users = User.all
+    # will_paginate gem を使用するため、User.all ではなく User.paginate を使用する。
+    # default では、1ページあたり 30 件のユーザーを表示する。
+    # :page パラメータでページ番号を指定して view に渡すことで、30 件ずつのページネーションが可能。
+    @users = User.paginate(page: params[:page])
   end
 
   def show
