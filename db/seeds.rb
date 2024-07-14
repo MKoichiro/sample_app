@@ -8,15 +8,16 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-# メインのサンプルユーザーを1人作成する
+# 管理者権限を持つサンプルユーザーを1人作成する
 User.create!(
   name: 'Example User',
   email: 'example@railstutorial.org',
   password: 'foobarbaz',
-  password_confirmation: 'foobarbaz'
+  password_confirmation: 'foobarbaz',
+  admin: true
 )
 
-# 追加のユーザーをまとめて生成する
+# 追加のサンプルユーザーをまとめて生成する
 99.times do |n|
   name = Faker::Name.name # => "Christophe Bartell" (facker gem でランダムな名前を生成)
   email = "example-#{n + 1}@railstutorial.org"
