@@ -12,24 +12,36 @@ class UsersController < ApplicationController
     # will_paginate gem を使用するため、User.all ではなく User.paginate を使用する。
     # default では、1ページあたり 30 件のユーザーを表示する。
     # :page パラメータでページ番号を指定して view に渡すことで、30 件ずつのページネーションが可能。
-    @users = User.paginate(page: params[:page])
+    # @users = User.paginate(page: params[:page])
+    # 
+    # 11.3.3 以降の実装: 有効化されたユーザーのみ表示
+    @users = User.where(activated: true).paginate(page: params[:page])
   end
 
   def show
     @user = User.find(params[:id])
+    # 11.3.3 以降の実装: 有効化されたユーザー出ない場合、ホームページにリダイレクトする。
+    (redirect_to root_url and return) unless @user.activated
   end
 
   def create
     @user = User.new(user_params)
     if @user.save
-      # signup 後に自動で login する。
-      reset_session
-      log_in @user
+      # # signup 後に自動で login する。
+      # reset_session
+      # log_in @user
 
-      flash[:success] = 'Welcome to the Sample App!'
+      # flash[:success] = 'Welcome to the Sample App!'
 
-      # redirect_to: GETリクエストを送信して別ページに遷移。
-      redirect_to @user
+      # # redirect_to: GETリクエストを送信して別ページに遷移。
+      # redirect_to @user
+
+      # 11.2.4 以降の実装
+      # signup 後に login せず、アカウント有効化メールを送信し、トップページにリダイレクト。
+      # UserMailer.account_activation(@user).deliver_now # `deliver_now`: メールを即時送信
+      @user.send_activation_email
+      flash[:info] = 'Please check your email to activate your account.'
+      redirect_to root_url
     else
       # 新しいリクエスト無しで、単に再描画。
       # 'new' は、`views/users/new.html.erb` を指す。

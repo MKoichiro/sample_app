@@ -2,11 +2,16 @@ class User < ApplicationRecord
   # accessor
   # accessor として model 定義内で追加すると、仮想的な属性として扱える。
   # 仮想的な属性とは、インスタンスから呼び出せるが、データベースには保存されない属性のこと。
-  attr_accessor :remember_token
+  # オブジェクトとは紐づけるが、データベースには保存すべきではない各種トークンなどが該当。
+  attr_accessor :remember_token, :activation_token
 
   # 保存前に email を小文字に変換する
   # before_save { self.email = email.downcase } と等価
-  before_save { email.downcase! }
+  # before_save { email.downcase! }
+  before_save :downcase_email
+
+  # User オブジェクトの生成前に、有効化トークンとダイジェストを作成する
+  before_create :create_activation_digest
 
   validates :name,
             presence: true,
@@ -43,14 +48,23 @@ class User < ApplicationRecord
   end
 
   # 渡されたトークンがダイジェストと一致したら true を返す
-  def authenticated?(remember_token)
-    # 別ブラウザでログアウトした場合、remember_digest カラムの値は nil になる。
-    # nil の場合、二行目でエラーになるので、false を返して早期脱出。
-    return false if remember_digest.nil?
+  # def authenticated?(remember_token)
+  #   # 別ブラウザでログアウトした場合、remember_digest カラムの値は nil になる。
+  #   # nil の場合、二行目でエラーになるので、false を返して早期脱出。
+  #   return false if remember_digest.nil?
 
-    # bcrypt内部の詳細は不明だが、
-    # .is_password? で内部的に remember_token をハッシュ化して比較しているらしい。
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  #   # bcrypt 内部の詳細は不明だが、
+  #   # .is_password? で内部的に remember_token をハッシュ化して比較しているらしい。
+  #   BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  # end
+
+  # 11.3.1: authenticated? メソッドを汎用的(remember me, account activation)
+  def authenticated?(attribute, token)
+    # send メソッドで、remember_digest メソッド、または activation_digest メソッドを動的に呼び出す
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # ユーザーのログイン情報を破棄する
@@ -69,6 +83,33 @@ class User < ApplicationRecord
     def new_token
       SecureRandom.urlsafe_base64 # "Li5i4FoDKHpRi8K3_Rbupw" など
     end
+  end
+
+  # アカウント有効化
+  def activate
+    # update_attribute(:activated, true)
+    # update_attribute(:activated_at, Time.zone.now)
+    update_columns(activated: true, activated_at: Time.zone.now)
+
+    # update_columns は、update_attributes と異なり、バリデーションやモデルコールバックをスキップするので、注意
+  end
+
+  # アカウント有効化用のメールを送信
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  private
+
+  def downcase_email
+    # `self.email = email.downcase` と等価、破壊的メソッドなら代入は不要
+    email.downcase!
+  end
+
+  def create_activation_digest
+    # 有効化トークンとダイジェストを生成・代入
+    self.activation_token = User.new_token
+    self.activation_digest = User.digest(activation_token)
   end
 end
 

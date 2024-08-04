@@ -33,7 +33,7 @@ module SessionsHelper
       @current_user = user if user && session[:session_token] == user.session_token
     elsif (user_id = cookies.encrypted[:user_id]) # [永続的] cookie に保存されたユーザーIDがある場合
       user = User.find_by(id: user_id)
-      if user&.authenticated?(cookies[:remember_token])
+      if user&.authenticated?(:remember, cookies[:remember_token])
         # ユーザーが存在し、かつ remember_token(cookies) と remember_digest(DB) が整合する場合
         log_in user
         @current_user = user

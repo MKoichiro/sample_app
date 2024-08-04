@@ -1,0 +1,20 @@
+<h1>Sample App</h1>
+
+<p>
+  Hi <%= @user.name %>,
+</p>
+
+<p>
+  Welcome to the Sample App! Click on the link below toactivate your account:
+</p>
+
+<%= link_to "Activate", edit_account_activation_url(@user.activation_token, email: @user.email) %>
+
+<%#
+memo 1:
+edit_account_activation_url(@user.activation_token, email: @user.email)
+  => `http://localhost:3000/account_activations/activation_token/edit?email=example%40railstutorial.org`
+     URLでは使用不可能な文字があるが、それらを適切に受け渡すために、`% + 16進数の文字コード` で表現する
+     例えば、`@` は URL で使用不可の文字で、rails は自動でこれを `%40` にエスケープする
+     なお、任意の文字列を URL エンコードするには、例えば、`CGI.escape('string')` を使用する
+%>

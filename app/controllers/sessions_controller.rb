@@ -5,20 +5,27 @@ class SessionsController < ApplicationController
   def create # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @user = User.find_by(email: params[:session][:email].downcase)
     if @user&.authenticate(params[:session][:password]) # 認証処理
-      # reset_session の前に、セッションに保存していた URL を変数に一時退避
-      forwarding_url = session[:forwarding_url]
+      if @user.activated?
+        # reset_session の前に、セッションに保存していた URL を変数に一時退避
+        forwarding_url = session[:forwarding_url]
 
-      # session id をリセット
-      reset_session
+        # session id をリセット
+        reset_session
 
-      # check box がチェックされている場合、'1' が送信されてくる
-      # remember(user): remember_token/digest を生成, cookie に remember_token と user_id を永続的に保存
-      params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
+        # check box がチェックされている場合、'1' が送信されてくる
+        # remember(user): remember_token/digest を生成, cookie に remember_token と user_id を永続的に保存
+        params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
 
-      # session[:user_id] = user.id で session にユーザーIDをセット
-      log_in @user
+        # session[:user_id] = user.id で session にユーザーIDをセット
+        log_in @user
 
-      redirect_to forwarding_url || @user
+        redirect_to forwarding_url || @user
+      else
+        message = 'Account not activated.'
+        message += 'Check your email for the activation link.'
+        flash[:warning] = message
+        redirect_to root_url
+      end
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new', status: :unprocessable_entity

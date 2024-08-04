@@ -114,4 +114,4 @@ end
 # assert_not cookies[:remember_token].blank?
 # は、assert_not cookies[:remember_token].empty? などで書き換えることはできない。
 # テスト環境以外では、空文字列を返すが、テスト環境では `nil` を返されるという事情があり、
-# この `nil` オブジェクトにempty?メソッドは存在しないため。
+# この `nil` オブジェクトに empty? メソッドは存在しないため。
