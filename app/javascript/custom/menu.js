@@ -9,7 +9,7 @@ function addToggleListener(selectedId, menuId, toggleClass) {
 }
 // クリックをトリガーにしてメニューを開閉する
 document.addEventListener("turbo:load", function () {
-  alert("turbo:load");
+  // alert("turbo:load");
   addToggleListener("hamburger", "navbar-menu", "collapse");
   addToggleListener("account", "dropdown-menu", "active");
 });

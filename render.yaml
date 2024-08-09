@@ -21,3 +21,6 @@ services:
         sync: false
       - key: WEB_CONCURRENCY
         value: 2 # sensible default
+      # 検証の結果以下は不要
+      # - key: MAILGUN_SMTP_LOGIN
+      # - key: MAILGUN_SMTP_PASSWORD
