@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # accessor として model 定義内で追加すると、仮想的な属性として扱える。
   # 仮想的な属性とは、インスタンスから呼び出せるが、データベースには保存されない属性のこと。
   # オブジェクトとは紐づけるが、データベースには保存すべきではない各種トークンなどが該当。
-  attr_accessor :remember_token, :activation_token
+  attr_accessor :remember_token, :activation_token, :reset_token
 
   # 保存前に email を小文字に変換する
   # before_save { self.email = email.downcase } と等価
@@ -12,6 +12,7 @@ class User < ApplicationRecord
 
   # User オブジェクトの生成前に、有効化トークンとダイジェストを作成する
   before_create :create_activation_digest
+
 
   validates :name,
             presence: true,
@@ -29,6 +30,7 @@ class User < ApplicationRecord
             presence: true,
             length: { minimum: 8 },
             allow_nil: true
+
 
   # 永続的セッションのためにユーザーをデータベースに記憶する
   def remember
@@ -85,7 +87,9 @@ class User < ApplicationRecord
     end
   end
 
-  # アカウント有効化
+
+  # ACCOUNT ACTIVATION
+  # アカウント有効化の属性を設定
   def activate
     # update_attribute(:activated, true)
     # update_attribute(:activated_at, Time.zone.now)
@@ -96,7 +100,26 @@ class User < ApplicationRecord
 
   # アカウント有効化用のメールを送信
   def send_activation_email
+    # UserMailer.account_activation メソッドは、app/mailers/user_mailer.rb で定義
     UserMailer.account_activation(self).deliver_now
+  end
+
+
+  # RESET PASSWORD
+  # パスワード再設定の属性を設定
+  def create_reset_digest
+    self.reset_token = User.new_token
+    update_columns(reset_digest: User.digest(reset_token), reset_sent_at: Time.zone.now)
+  end
+
+  # パスワード再設定用のメールを送信
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
+  end
+
+  # パスワード再設定リンクの期限切れを判定。(2時間)
+  def password_reset_expired?
+    reset_sent_at < 2.hours.ago
   end
 
   private

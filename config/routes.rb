@@ -10,7 +10,8 @@ Rails.application.routes.draw do
   # `'users/new'` の役割は↑で果たされているため、生成から除く。
   resources :users, except: [:new]
 
-  resources :account_activations, only: [:edit]
+  resources :account_activations, only:   [:edit]
+  resources :password_resets,     except: [:index, :show, :destroy]
 
   get    '/login',  to: 'sessions#new'
   post   '/login',  to: 'sessions#create'
