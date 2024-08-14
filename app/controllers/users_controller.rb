@@ -20,6 +20,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page: params[:page])
     # 11.3.3 以降の実装: 有効化されたユーザー出ない場合、ホームページにリダイレクトする。
     (redirect_to root_url and return) unless @user.activated
   end

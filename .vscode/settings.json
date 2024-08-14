@@ -47,6 +47,8 @@
   "solargraph.commandPath": "/home/koichiro/.rbenv/shims/solargraph",
   "cSpell.words": [
     "hotwired",
-    "importmap"
+    "importmap",
+    "micropost",
+    "microposts"
   ],
 }

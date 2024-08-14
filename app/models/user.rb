@@ -1,9 +1,18 @@
 class User < ApplicationRecord
-  # accessor
+  # - アソシエーション
+
+  has_many :microposts, dependent: :destroy
+
+
+  # - accessor
   # accessor として model 定義内で追加すると、仮想的な属性として扱える。
   # 仮想的な属性とは、インスタンスから呼び出せるが、データベースには保存されない属性のこと。
   # オブジェクトとは紐づけるが、データベースには保存すべきではない各種トークンなどが該当。
+
   attr_accessor :remember_token, :activation_token, :reset_token
+
+
+  # - before_メソッド
 
   # 保存前に email を小文字に変換する
   # before_save { self.email = email.downcase } と等価
@@ -13,6 +22,8 @@ class User < ApplicationRecord
   # User オブジェクトの生成前に、有効化トークンとダイジェストを作成する
   before_create :create_activation_digest
 
+
+  # - バリデーション
 
   validates :name,
             presence: true,
@@ -31,6 +42,8 @@ class User < ApplicationRecord
             length: { minimum: 8 },
             allow_nil: true
 
+
+  # - メソッド
 
   # 永続的セッションのためにユーザーをデータベースに記憶する
   def remember

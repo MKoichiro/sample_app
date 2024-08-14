@@ -8,6 +8,9 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+
+# User
+
 # 管理者権限を持つサンプルユーザーを1人作成する
 User.create!(
   name: 'Example User',
@@ -33,6 +36,16 @@ User.create!(
     activated: true,
     activated_at: Time.zone.now
   )
+end
+
+
+# Micropost
+
+# 最初の6人に50件のマイクロポストを追加する
+users = User.order(:created_at).take(6)
+50.times do
+  content = Faker::Lorem.sentence(word_count: 5)
+  users.each { |user| user.microposts.create!(content: content) }
 end
 
 # memo 1: `create!`
