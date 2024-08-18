@@ -19,14 +19,17 @@ class MicropostsController < ApplicationController
     @micropost.destroy
     flash[:success] = 'Micropost deleted'
 
-    # test 環境ではブラウザを介さないため referrer が定義されず nil になるので、分岐が必要。
-    if request.referrer.nil?
-      redirect_to root_url, status: :see_other
-    else
-      # delete btn は user/show と static_pages/home の二か所にパーシャルで読み込まれる。
-      # どちらにも対応できるように、`request.referrer`で直前のページにリダイレクト
-      redirect_to request.referrer, status: :see_other
-    end
+    # # test 環境ではブラウザを介さないため referrer が定義されず nil になるので、分岐が必要。
+    # if request.referrer.nil?
+    #   redirect_to root_url, status: :see_other
+    # else
+    #   # delete btn は user/show と static_pages/home の二か所にパーシャルで読み込まれる。
+    #   # どちらにも対応できるように、`request.referrer`で直前のページにリダイレクト
+    #   redirect_to request.referrer, status: :see_other
+    # end
+    
+    # ↓のようにも書ける
+    redirect_back_or_to(root_url, status: :see_other)
   end
 
   private
