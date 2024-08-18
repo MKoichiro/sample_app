@@ -1,0 +1,18 @@
+<% if @feed_items.any? %>
+  <ol class="microposts">
+    <%# @feed_items が Micropost モデルのインスタンスであることを Rails は理解し、
+    対応する名前を持つ app/views/microposts/_micropost.html.erb パーシャルに @feed_items を渡して描画する %>
+    <%= render @feed_items %>
+  </ol>
+  <%= will_paginate @feed_items, params: { controller: :static_pages, action: :home } %>
+<% end %>
+
+<%#
+memo: will_paginate
+  `will_paginate @feed_items` だけでも基本的には正常に動作するが、
+  投稿エラーになると、url が `root` から `root/micropost` になる。
+  will_paginate は仕様上、現在の url から各ページの url を `url?page=1`のように生成する。
+  そのため、`root/micropost` になると、`root/micropost?page=1` になり、
+  無効な投稿をした後にページをめくろうとするとラウティングエラーになる。
+  これは、controller と action を明示し、生成する url を固定することで解決できる。
+%>

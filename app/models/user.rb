@@ -135,6 +135,12 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
+  # ユーザーのフィード(タイムライン、投稿一覧)を返す
+  def feed
+    # (self.)microposts と同義だが、拡張予定のため以下のコードを使用
+    Micropost.where('user_id = ?', id)
+  end
+
   private
 
   def downcase_email
@@ -236,3 +242,15 @@ end
 # 新規ユーザー登録時には、`validates` メソッドによるバリデーションだけでなく、
 # `has_secure_password` メソッドによるバリデーションが効くので、
 # `validates` メソッドによるバリデーションで `nil` を許容して問題ない。
+
+# memo 9: Micropost.where('user_id = ?', id)
+# - where メソッドは、ActiveRecordの記法で、SQLクエリを生成する。
+# - `?` はプレースホルダーで、SQLインジェクションを防ぐために使用される。
+# 例えば、
+# ```
+# user_id = params[:id]
+# Micropost.where("user_id = #{user_id}")
+# ```
+# とすると、悪意あるユーザーがhttps://example.com/users/microposts?user_id=1; DROP TABLE users
+# などのように、SQLインジェクションを仕掛けることができる。
+# これを防ぐために、プレースホルダー（?）を使用して、RailsにSQLクエリを安全に生成させる。

@@ -11,8 +11,16 @@ Rails.application.routes.draw do
   resources :users, except: [:new]
 
   resources :account_activations, only:   [:edit]
+
   resources :password_resets,     except: [:index, :show, :destroy]
 
+  # users の view に投稿フォームを組み込むので、micropost に専用の view は不要
+  resources :microposts,          only:   [:create, :destroy]
+  # ↓Chrome などでは micropost 投降後にリロードするとエラーになる場合(バージョン)があったらしい。
+  # （現在は特にそのような問題は起こらないが、念のため）
+  get '/microposts', to: 'static_pages#home'
+
+  # session
   get    '/login',  to: 'sessions#new'
   post   '/login',  to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'

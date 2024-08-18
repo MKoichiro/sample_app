@@ -78,17 +78,18 @@ class UsersController < ApplicationController
   end
 
   # Before filters
-  # ログインしていないユーザーの場合、ログインページにリダイレクトする。
-  def logged_in_user
-    unless logged_in?
-      # friendly forwarding のために、アクセスしようとした URL をセッションに一時退避
-      store_location
+  # 13.3.1 以降、microposts controller でも使用するため、親クラスの `ApplicationController` に移動。
+  # # ログインしていないユーザーの場合、ログインページにリダイレクトする。
+  # def logged_in_user
+  #   unless logged_in?
+  #     # friendly forwarding のために、アクセスしようとした URL をセッションに一時退避
+  #     store_location
 
-      flash[:danger] = 'Please log in.'
-      # destory アクションの before filter になるため、status: :seeother でリダイレクト。
-      redirect_to login_url, status: :see_other
-    end
-  end
+  #     flash[:danger] = 'Please log in.'
+  #     # destory アクションの before filter になるため、status: :seeother でリダイレクト。
+  #     redirect_to login_url, status: :see_other
+  #   end
+  # end
 
   # 本人でない場合、ホームページにリダイレクトする。
   def correct_user
