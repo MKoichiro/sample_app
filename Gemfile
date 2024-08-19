@@ -21,6 +21,10 @@ gem 'faker', '2.21.0'
 gem 'will_paginate', '3.3.1'
 # Provide pagenation for Bootstrap
 gem 'bootstrap-will_paginate', '1.0.0'
+# Provide validations for image files
+gem 'active_storage_validations', '0.9.8'
+# Convert image size: including 'mini_magick' gem as its dependency
+gem 'image_processing', '1.12.2'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'

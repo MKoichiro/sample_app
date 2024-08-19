@@ -22,7 +22,7 @@ class MicropostsInterfaceTest < MicropostsInterface
   end
 
   test 'should create a micropost on valid submission' do
-    content = 'This micropost really ties the room together'
+    content = 'This micropost really ties the room together.'
     assert_difference 'Micropost.count', 1 do
       post microposts_path, params: { micropost: { content: content } }
     end
@@ -65,5 +65,19 @@ class MicropostSidebarTest < MicropostsInterface
     log_in_as(users(:lana))
     get root_path
     assert_match '1 micropost', response.body
+  end
+end
+
+class ImageUploadTest < MicropostsInterface
+  test 'should have a file Input field for image' do
+    get root_path
+    assert_select 'input[type=file]'
+  end
+
+  test 'should be able to attach an image' do
+    content = 'This micropost really ties the room together.'
+    image = fixture_file_upload('kitten.jpg', 'image/jpeg')
+    post microposts_path, params: { micropost: { content: content, image: image } }
+    assert @user.microposts.first.image.attached?
   end
 end

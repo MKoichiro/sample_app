@@ -5,6 +5,8 @@ class MicropostsController < ApplicationController
   def create
     # user obj に対して、micropost obj を作成する場合には、new ではなく build メソッド。
     @micropost = current_user.microposts.build(micropost_params)
+    # imageメソッドで、画像ファイルを添付する。
+    @micropost.image.attach(params[:micropost][:image])
     if @micropost.save
       flash[:success] = 'Micropost created!'
       redirect_to root_url # login 済みのユーザーのルートページは、非login ユーザーのルートページと表示内容が異なるのでこれで OK。
@@ -35,7 +37,7 @@ class MicropostsController < ApplicationController
   private
 
   def micropost_params
-    params.require(:micropost).permit(:content)
+    params.require(:micropost).permit(:content, :image)
   end
 
   def correct_user
