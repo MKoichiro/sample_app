@@ -3,9 +3,15 @@
   <%# login 済みのユーザーの場合は、root_url に micropost 作成フォームを表示 %>
   <div class="row">
     <aside class="col-md-4">
+
       <section class="user_info">
         <%= render 'shared/user_info' %>
       </section>
+
+      <section class="stats">
+        <%= render 'shared/stats' %>
+      </section>
+
       <section class="micropost_form">
         <%= render 'shared/micropost_form' %>
       </section>

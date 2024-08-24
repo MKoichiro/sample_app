@@ -48,5 +48,18 @@ users = User.order(:created_at).take(6)
   users.each { |user| user.microposts.create!(content: content) }
 end
 
+
+# Relationship
+
+users = User.all
+following = users[2..50]
+followers = users[3..40]
+
+# 'Example User' が 2 〜 50 番目の人をフォローし、3 〜 40 番目の人にフォローされるという Relationship レコードを作成
+user = users.first # 'Example User' は最初のユーザー
+following.each { |followed| user.follow(followed) }
+followers.each { |follower| follower.follow(user) }
+
+
 # memo 1: `create!`
 # `create!` は `create` と違い、データが無効の場合に「例外」（エラー）を発生させる。

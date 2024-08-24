@@ -1,8 +1,18 @@
 class User < ApplicationRecord
   # - アソシエーション
 
+  # user.microposts で、micropost model から、user_id と一致する micropost を自動的に取得する仕様。
+  # これは、symbolが :microposts で、class_name が 'Micropost' であり、自身のクラス名が User であるから可能。
   has_many :microposts, dependent: :destroy
 
+  # フォロー機能のアソシエーション
+  # User table の内部 id と、Relationship table の follower_id, followed_id を外部 id として紐づけ
+  # User.active/passive_relationships で、follower/followed の Relationships オブジェクトが取得可能に
+  has_many :active_relationships, class_name: 'Relationship', foreign_key: 'follower_id', dependent: :destroy
+  has_many :passive_relationships, class_name: 'Relationship', foreign_key: 'followed_id', dependent: :destroy
+
+  has_many :following, through: :active_relationships, source: :followed
+  has_many :followers, through: :passive_relationships # source: :follower は省略可能。Rails が自動的に、:follower_id を参照
 
   # - accessor
   # accessor として model 定義内で追加すると、仮想的な属性として扱える。
@@ -137,9 +147,72 @@ class User < ApplicationRecord
 
   # ユーザーのフィード(タイムライン、投稿一覧)を返す
   def feed
-    # (self.)microposts と同義だが、拡張予定のため以下のコードを使用
-    Micropost.where('user_id = ?', id)
+    # 案Ⅰ:
+    # ```Micropost.where('user_id IN (?) OR user_id = ?', following_ids, id)```
+    # 1. SQL クエリ
+    # ```SELECT * FROM microposts WHERE user_id IN (1, 2, 3) OR user_id = 1```
+    # 2. `following_ids` メソッド
+    # - `following_ids` は、`has_many through` のアソシエーションを受けて、Rails が自動定義する。これは `following_id` の配列を返す。
+    # - 実際は、`<user object>.following.map { |i| i.id }` の処理が行われる。
+    # 3. 解説
+    # Micropost table の `user_id` が、
+    #   自身のフォローしているユーザーの `id` と一致するか (`IN <following_ids>`)、
+    #   または、
+    #   自身の `id` と一致する (`OR user_id = <id>`)
+    # という条件で、micropost を取得する。
+    # 4. 動作
+    # - 正常
+    # 5. 問題点
+    # - フォローしているユーザーが大量にいる場合に問題になる。
+    # - `following_ids` で、データベースから一度メモリに大量のデータを取得するため、非効率。
+
+    # 案Ⅱ: サブクエリ
+    # ```
+    # following_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id"
+    # Micropost.where("user_id IN (#{following_ids}) OR user_id = :user_id", user_id: id)
+    # ```
+    # 1. SQL クエリ
+    # ```SELECT * FROM microposts WHERE user_id IN (SELECT followed_id FROM relationships WHERE follower_id = 1) OR user_id = 1```
+    # 2. 解説
+    # `following_ids` メソッドを使わずに、SQL のサブクエリを直接指定して使うことで、
+    # ローカルのメモリを使うことなく、データベース側で効率的に処理する。
+    # 3. 動作
+    # - 正常
+    # 4. 問題点
+    # フィードパーシャルが、マイクロポストパーシャルを表示している。
+    # マイクロポストのパーシャルが、対応するユーザーの情報を表示する時に、追加でクエリが発生する。
+    # これは、マイクロポストがN個ある場合、"追加で" N 回のクエリが発生することを意味する。( N + 1 問題)
+    # また、今回の場合、添付画像も取得するため、2N + 1 回のクエリが発生する。
+
+    # 案Ⅲ: eager loading
+    following_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id"
+    Micropost.where("user_id IN (#{following_ids}) OR user_id = :user_id", user_id: id).includes(:user, image_attachment: :blob)
   end
+
+  # ユーザーをフォローする
+  def follow(other_user)
+    # active_relationships.create(followed_id: other_user.id) unless self == other_user
+    # self.following 配列に other_user を追加
+    following << other_user unless self == other_user
+  end
+
+  # ユーザーをアンフォローする
+  def unfollow(other_user)
+    # self.following 配列から other_user を削除
+    following.delete(other_user)
+  end
+
+  # フォローチェック
+  def following?(other_user)
+    # self.following 配列に other_user が含まれているか検索
+    # このとき rails はデータベース側で検索を行い、高効率になるように配慮している。
+    following.include?(other_user)
+  end
+
+  # 被フォローチェック
+  # def followed_by?(other_user)
+  #  followers.include?(other_user)
+  # end
 
   private
 

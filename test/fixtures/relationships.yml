@@ -1,0 +1,22 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# Relationships は、本来 follower_id と followed_id が必要だが、
+# それぞれUser オブジェクトとのアソシエーションを relationship.rb で定義しているため、
+# User オブジェクトを直接指定しても、Rails が自動的に id を取得してくれる。
+
+one:
+  follower: michael # follower_id: 1 と同義。（michael の id は 1）
+  followed: lana
+
+# michael が malory をフォロー
+two:
+  follower: michael
+  followed: malory
+
+three:
+  follower: lana
+  followed: malory
+
+four:
+  follower: archer
+  followed: michael

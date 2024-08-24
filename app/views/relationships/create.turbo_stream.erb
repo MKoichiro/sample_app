@@ -1,0 +1,14 @@
+<%= turbo_stream.update "follow_form" do %> <%# `follow_form` の css id を持つ要素の中身を users/unfollow パーシャルで置き換え %>
+  <%= render partial: "users/unfollow" %> <%# 今回の場合、follow ボタンを unfollow ボタンに置き換え %>
+<% end %>
+
+<%= turbo_stream.update "followers" do %> <%# `followers` の css id を持つ要素の中身を更新 %>
+  <%= @user.followers.count %> <%# dbに再度問い合わせて、フォロワー数を更新 %>
+<% end %>
+
+<%#
+memo: render partial
+`partial:` を明示するのは、このファイルが、app/views/relationships ディレクトリに存在し、
+render したいパーシャルが、これと異なるディレクトリ(今回の場合app/views/users)に存在し、
+かつ、app/views/shared ディレクトリでもないため。
+%>
