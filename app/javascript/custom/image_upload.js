@@ -1,6 +1,5 @@
-// 10MB 以上の画像のアップロードをアラートで防止
-document.addEventListener("turbo:load", () => {
-
+// main: 10MB 以上の画像のアップロードをアラートで防止
+const imageUpload = () => {
   document.addEventListener("change", e => {
     let imageUpload = document.querySelector("#micropost_image");
     if (imageUpload && imageUpload.files.length > 0) {
@@ -11,5 +10,6 @@ document.addEventListener("turbo:load", () => {
       }
     }
   });
+}
 
-});
+document.addEventListener("turbo:load", imageUpload);

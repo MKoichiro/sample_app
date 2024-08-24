@@ -1,15 +1,17 @@
-// トグルリスナー
-function addToggleListener(selectedId, menuId, toggleClass) {
+// helper: トグルリスナー
+const addToggleListener = (selectedId, menuId, toggleClass) => {
   let selectedElm = document.querySelector(`#${selectedId}`);
-  selectedElm.addEventListener("click", function (event) {
-    event.preventDefault();
+  selectedElm.addEventListener("click", e => {
+    e.preventDefault();
     let menu = document.querySelector(`#${menuId}`);
     menu.classList.toggle(toggleClass);
   });
 }
-// クリックをトリガーにしてメニューを開閉する
-document.addEventListener("turbo:load", function () {
-  // alert("turbo:load");
+
+// main: クリックをトリガーにしてメニューを開閉する
+const menu = () => {
   addToggleListener("hamburger", "navbar-menu", "collapse");
   addToggleListener("account", "dropdown-menu", "active");
-});
+}
+
+document.addEventListener("turbo:load", menu);
